@@ -12,11 +12,11 @@ if [ ! -d "/proc/${pid}" ]; then
     exit 1 
 fi
 
-name=$(cat /proc/$PID/comm)
+name=$(cat /proc/${pid}/comm)
 echo "[x] ${pid} (${name})"
 
 for tid in $(ls /proc/${pid}/task/); do
-    status="/proc/${pid}/task/${pid}/status"
+    status="/proc/${pid}/task/${tid}/status"
 
     if [ -e "$status_file" ]; then
         name=$(cat /proc/${pid}/task/${tid}/comm)
