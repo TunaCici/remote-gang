@@ -7,6 +7,11 @@ fi
 
 pid=$1
 
+if [ ! -d "/proc/${pid}" ]; then
+    echo "Process with PID ${pid} does not exist."
+    exit 1 
+fi
+
 name=$(cat /proc/$PID/comm)
 echo "[x] ${pid} (${name})"
 
