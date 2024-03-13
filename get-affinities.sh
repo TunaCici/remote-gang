@@ -15,8 +15,8 @@ fi
 name=$(cat /proc/$PID/comm)
 echo "[x] ${pid} (${name})"
 
-for tid in $(ls /proc/$PID/task/); do
-    status="/proc/$PID/task/$tid/status"
+for tid in $(ls /proc/${pid}/task/); do
+    status="/proc/${pid}/task/${pid}/status"
 
     if [ -e "$status_file" ]; then
         name=$(cat /proc/${pid}/task/${tid}/comm)
