@@ -18,7 +18,7 @@ echo "[x] ${pid} (${name})"
 for tid in $(ls /proc/${pid}/task/); do
     status="/proc/${pid}/task/${tid}/status"
 
-    if [ -e "$status_file" ]; then
+    if [ -e "$status" ]; then
         name=$(cat /proc/${pid}/task/${tid}/comm)
         affinity=$(cat ${status} | grep -w "Cpus_allowed_list" | grep -oE '[0-9,-]+')
     
