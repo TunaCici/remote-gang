@@ -1,28 +1,26 @@
 #!/usr/bin/env bash
 
 if [ $# -eq 0 ]; then
-    echo "Usage ./get-affinities.sh <PID>"
+    echo "usage: ./get-affinities.sh <PID>"
     exit 1
 fi
 
 pid=$1
 
 if [ ! -d "/proc/${pid}" ]; then
-    echo "Process with PID ${pid} does not exist."
+    echo "process with PID ${pid} does not exist"
     exit 1 
 fi
 
-name=$(cat /proc/${pid}/comm)
-echo "[x] ${pid} (${name})"
+echo "${pid} $(cat /proc/${pid}/comm)"
 
 for tid in $(ls /proc/${pid}/task/); do
-    status="/proc/${pid}/task/${tid}/status"
-
-    if [ -e "$status" ]; then
+    if [ -e "/proc/${pid}/task/${tid}/status" ]; then
         name=$(cat /proc/${pid}/task/${tid}/comm)
-        affinity=$(cat ${status} | grep -w "Cpus_allowed_list" | grep -oE '[0-9,-]+')
-    
-    echo "[x] \-- ${tid} ${name}, Core Affinity: ${affinity}"
+        thread=$(cat /proc/${pid}/task/${tid}/status | grep -w "Tgid" | grep -oE '[0-9]+')
+        affinity=$(cat /proc/${pid}/task/${tid}/status | grep -w "Cpus_allowed_list" | grep -oE '[0-9,-]+')
+        prio=$(cat /proc/${pid}/task/${tid}/stat | awk '{print $18}')
+
+        echo "\-- ${tid} (${name}) affinity: ${affinity} prio: ${prio}"
     fi
 done
-
