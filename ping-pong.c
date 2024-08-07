@@ -4,9 +4,11 @@
 
 #include <unistd.h>
 #include <pthread.h>
+#include <sched.h>
 #include <linux/prctl.h>
 #include <sys/prctl.h>
 #include <sys/time.h>
+#include <sched.h>
 
 #define PROG_NAME "ping-pong"
 #define BCAS(ptr, expected, desired) \
@@ -35,8 +37,13 @@ static long get_usec()
 static void *ping_guy(void *arg)
 {
         unsigned int cycle = *((unsigned int*) arg);
+        cpu_set_t set = {0};
+
+        CPU_ZERO(&set);
+        CPU_SET(1, &set);
 
         int res = prctl(PR_SET_NAME, "ping_thread");
+        res = sched_setaffinity(gettid(), sizeof(set), &set);
 
         /* Start ping ponging */
         if (table == OP_NONE) {
@@ -65,8 +72,13 @@ static void *ping_guy(void *arg)
 static void *pong_guy(void *arg)
 {
         unsigned int cycle = *((unsigned int*) arg);
+        cpu_set_t set = {0};
+
+        CPU_ZERO(&set);
+        CPU_SET(1, &set);
 
         int res = prctl(PR_SET_NAME, "pong_thread");
+        res = sched_setaffinity(gettid(), sizeof(set), &set);
 
         long begin_time = get_usec();
 
